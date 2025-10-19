@@ -1,13 +1,30 @@
 // src/middlewares/checkLeagueExists.ts
 import type { FastifyRequest, FastifyReply } from "fastify";
+import { z } from "zod";
+
+const Params = z.object({
+  league_slug: z.string().min(1),
+});
 
 export async function checkLeagueExists(
   req: FastifyRequest,
   reply: FastifyReply
 ) {
-  const { league_slug } = req.params as { league_slug: string };
-  const league = await req.server.prisma.league.findUnique({
-    where: { slug: league_slug },
+  // sport must already be set by checkSportExists
+  if (!req.sport)
+    return reply.code(500).send({ error: "Sport context missing" });
+
+  const parsed = Params.safeParse(req.params);
+  if (!parsed.success)
+    return reply.code(400).send({ error: "Invalid league params" });
+
+  const { league_slug } = parsed.data;
+
+  const league = await req.server.prisma.league.findFirst({
+    where: {
+      slug: league_slug,
+      sportId: req.sport.id,
+    },
   });
 
   if (!league) {
