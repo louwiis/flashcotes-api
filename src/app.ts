@@ -1,4 +1,5 @@
 // src/app.ts
+import "dotenv/config";
 import Fastify from "fastify";
 import { env, isProd } from "./config/env";
 import {
