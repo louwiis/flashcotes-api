@@ -28,7 +28,15 @@ export async function buildApp() {
   // Same-origin by default (since /api is proxied through same domain)
   if (env.ENABLE_CORS) {
     const cors = (await import("@fastify/cors")).default;
-    await app.register(cors, { origin: true, credentials: true });
+
+    if (env.NODE_ENV === "production") {
+      await app.register(cors, {
+        origin: "https://flashcotes.louwis.dev",
+        credentials: true,
+      });
+    } else {
+      await app.register(cors, { origin: true, credentials: true });
+    }
   }
 
   // Basic rate-limit in prod
