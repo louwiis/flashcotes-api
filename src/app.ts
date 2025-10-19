@@ -6,6 +6,8 @@ import {
   validatorCompiler,
   serializerCompiler,
 } from "fastify-type-provider-zod";
+import zodPlugin from "@/plugins/zod";
+import prismaPlugin from "@/plugins/prisma";
 
 export async function buildApp() {
   const app = Fastify({
@@ -14,9 +16,8 @@ export async function buildApp() {
     bodyLimit: 1_000_000,
   }).withTypeProvider<ZodTypeProvider>();
 
-  // Zod compilers
-  app.setValidatorCompiler(validatorCompiler);
-  app.setSerializerCompiler(serializerCompiler);
+  await app.register(zodPlugin);
+  await app.register(prismaPlugin);
 
   // Security middlewares (prod-lean)
   if (env.ENABLE_HELMET) {
