@@ -2,16 +2,21 @@
   "name": "fastify-min",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/app.ts",
-    "start": "tsx src/app.ts",
-    "build": "tsc --noEmit",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:generate": "prisma generate"
+    "dev": "NODE_ENV=development tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "start:migrate": "RUN_MIGRATIONS=true node dist/server.js",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/rate-limit": "^10.3.0",
     "@prisma/client": "^6.17.1",
     "dotenv": "^17.2.3",
+    "execa": "^9.6.0",
     "fastify": "^5.6.1",
     "fastify-plugin": "^5.1.0",
     "fastify-type-provider-zod": "^4.0.0",
